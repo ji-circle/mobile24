@@ -41,8 +41,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            //dynamicColor 변경 -> Theme에서 dynamiccolor가 false이기 때문에 조건문에 의해 light가 됨
-            //  light는 Theme 윗부분에 정의되어있음. 그 색으로 변함
             FirstApp1Theme(dynamicColor = false) {
                 MyApp(modifier = Modifier.fillMaxSize())
             }
@@ -52,8 +50,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyApp(modifier: Modifier = Modifier) {
-//    var starting by remember { mutableStateOf(true) }
-    //화면 회전 시 초기화되지 않게 하려면 remember가 아니고 rememberSaveable로 해야 함
     var starting by rememberSaveable { mutableStateOf(true) }
 
     Scaffold(modifier = modifier) { innerPadding ->
@@ -63,7 +59,11 @@ fun MyApp(modifier: Modifier = Modifier) {
                 modifier = modifier.padding(innerPadding)
             )
         } else {
-            Greetings(modifier = modifier.padding(innerPadding))
+            Greetings(
+                //여기 코드 추가함
+                onBackClicked = { starting = true },
+                modifier = modifier.padding(innerPadding)
+            )
         }
     }
 }
@@ -74,11 +74,15 @@ fun OnBoardingScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        //과제 제출 위해 수정한 부분들
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End
     ) {
-        Text("Welcome to jetpack compose")
+        Text("Welcome to")
+        Text("jetpack compose!")
 
         Button(
             modifier = Modifier.padding(vertical = 24.dp),
@@ -89,17 +93,31 @@ fun OnBoardingScreen(
     }
 }
 
+//greetings 에도 onBackClicked를 만들어서 받아옴
 @Composable
 fun Greetings(
+    onBackClicked: () -> Unit,
     modifier: Modifier = Modifier,
-//    names: List<String> = listOf("World", "Compose")
-    names: List<String> = List(1000) { "$it" } //it 은 각각의 인덱스를 나타냄
+    names: List<String> = List(1000) { "Student $it" }
 ) {
-    //스크린에 보일 때만 존재하면 되니까 LazyColumn 사용하기
-    LazyColumn(modifier = modifier.padding(4.dp)) {
-        // items 선택 시 list<> 있는 거 선택
-        items(items = names) { name ->
-            Greeting(name = name)
+    Column(
+        //modifier 부분을 여기로 다 빼냄
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.padding(4.dp)
+    ) {
+        Button(
+            //modifier = modifier.padding(bottom = 5.dp),
+            onClick = onBackClicked
+        ) {
+            Text("Back to the starting window")
+        }
+
+//        LazyColumn(modifier = modifier.padding(4.dp)) {
+// 괄호 안의 modifier padding 부분을 위로 같이 빼냄
+        LazyColumn() {
+            items(items = names) { name ->
+                Greeting(name = name)
+            }
         }
     }
 
@@ -107,22 +125,14 @@ fun Greetings(
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    //여기도 rememberSavable 해야 함
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    //클릭해서 패딩 늘어날 때 애니메이션 추가하기
-// 원래:    val extraPadding = if (expanded) 28.dp else 0.dp
-//    val extraPadding by animateDpAsState(targetValue = if (expanded) 28.dp else 0.dp)
     val extraPadding by animateDpAsState(
         targetValue = if (expanded) 28.dp else 0.dp,
-        //spring : 한번 눌렀을 때 통통 튀는 효과를 줌
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
         )
-        //이 상태로는 다시 눌렀을 떄 (show less를 눌렀을 때) 앱이 죽는 경우가 발생... -> padding이 음수가 되어서
-        // bounce를 할 때, 목표치 위아래로 왔다갔다 하게 됨... 그래서 0으로 갈 때 음수가 됨
-        //   --> greeting의 컬럼 부분의 패딩 부분을 수정해야 함!
     )
 
     Surface(
@@ -131,27 +141,22 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.padding((24.dp))
+//            modifier = modifier.padding((24.dp))
+            modifier = modifier
+                .padding((24.dp))
+                .padding(bottom = extraPadding.coerceAtLeast(0.dp))
         ) {
             Column(
                 modifier = modifier
                     .weight(1f)
-//                    .padding(bottom = extraPadding)
-                    //패딩이 음수가 되지 않게 수정
-                    //  0 이하로는 허용하지 않겠다는 것
-                    .padding(bottom = extraPadding.coerceAtLeast(0.dp))
+//                    .padding(bottom = extraPadding.coerceAtLeast(0.dp))
             ) {
-                Text(text = "Hello $name!")
-                Text(text = name)
-                //텍스트의 스타일 변경
-//                Text(text = name, style = MaterialTheme.typography.headlineMedium)
-                //만약 위에서 조금 더 수정하고 싶다면 (ex. 추가로 볼드체로 바꾸는 것 외에는 다른건 그대로 카피 하겠다)
+                Text(text = "Mobile App Development")
                 Text(
                     text = name, style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.ExtraBold
                     )
                 )
-                //테마의 색상 등은 Project > app > src > main > java > ... > ui.Theme > Theme.kt 아래에 있음
             }
             // 버튼
             ElevatedButton(onClick = { expanded = !expanded }) {
@@ -168,5 +173,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     FirstApp1Theme {
         MyApp()
+//        Greetings(onBackClicked = )
+        //위와 같은 경우 어떻게 넣여야 프리뷰 보는거지...?
     }
 }
