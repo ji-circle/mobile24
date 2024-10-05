@@ -55,11 +55,13 @@ fun MyApp(modifier: Modifier = Modifier) {
 //    val starting = remember { mutableStateOf(true) }
     // 위 코드로 하려면 매번 starting.value 로 접근해야 함
     var starting by remember { mutableStateOf(true) }
+    //by 로 하면 .value로 안 써도 됨.. getvalue setvalue import해주기
 
     if (starting) {
         //아래 코드들을 함수로 빼냄
         OnBoardingScreen(onContinueClicked = { starting = false })
         //그냥 빼면 starting에서 문제가 남! --> onclick이라는 함수를 여기서 저기로 넘겨줘야 함. 변수가 아니고
+        // 아래 버튼에서 클릭이 되었을 때 실행되는 함수의 구현부가 여기 있음.
 
 //        Scaffold(modifier = modifier) { innerPadding ->
 //            //정렬은 컬럼 뒤 괄호에 넣기
@@ -86,14 +88,17 @@ fun MyApp(modifier: Modifier = Modifier) {
 
 @Composable
 fun OnBoardingScreen(
-    onContinueClicked: () -> Unit, //아무 파라미터도 받지 않는데 특별히 아무것도 리턴하지 않는... = 함수를 받는..?
+    onContinueClicked: () -> Unit, //아무 파라미터도 받지 않는데 특별히 아무것도 리턴하지 않는... = 함수를 파라미터로 받는 것임
     modifier: Modifier = Modifier
 ) {
     Scaffold(modifier = modifier) { innerPadding ->
         //정렬은 컬럼 뒤 괄호에 넣기
         Column(
-            //범위 정해주기. 전체를 다 사용할거면 fillMaxSize 추가해야 함
+            //범위 정해주기. 전체를 다 사용할거면 fillMaxSize 추가해야 함 (아래 center랑 centerhorizontally의 범위)
             modifier = modifier.padding(innerPadding).fillMaxSize(),
+            //alignment는 정렬 = 컨테이너의 수직 방향 정렬방식
+            //arrangement는 배열 = 컨테이너의 수평 방향 배치방식. 어떻게 배치할건지.
+            //arrangement는 배열. row에서는 horizontalArrangement로 해당 영역의 수평 방향, column에서는 자식의 위치를 수직 방향으로 vertical
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -104,7 +109,9 @@ fun OnBoardingScreen(
                 //여기서 Modifier를 대문자로 쓴 이유 : 아니면 위의 innerpadding이 그대로 들어옴
                 modifier = Modifier.padding(vertical = 24.dp),
 //                onClick = { starting.value = !starting.value }) {
-                // onclick 에 넣을 함수를 argument로 받을 것임
+                // onclick 에 넣을 함수를 argument로 받을 것임. 이 함수의 구현부가 위에 있는 것임!
+                //  변화시킬 상태가 위에 있으니까.
+                // 상태 자제를 여기서는 접근할 수 없고, 재사용성이 높아짐.
                 onClick = onContinueClicked
             ) {
                 Text("Continue")
