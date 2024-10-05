@@ -50,8 +50,10 @@ fun MyApp(modifier: Modifier = Modifier) {
         if (starting) {
             OnBoardingScreen(
                 onContinueClicked = { starting = false },
+                //여기서 한번에 innerpadding 줌
                 modifier = modifier.padding(innerPadding))
         } else {
+            //여기서 한번에 innerpadding 줌
             Greetings(modifier = modifier.padding(innerPadding))
         }
     }
