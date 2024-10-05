@@ -73,7 +73,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     val expanded = remember { mutableStateOf(false) }
 
     //상태는 expanded 하나로 하고, 그거에 의존하게 코드를 짤 것임
-    //  상태에 따라, 각 컬럼에 extra padding을 주고 버튼이 가운데 정렬이 되게 하려면 컬럼에 코드 추가
+    //  상태에 따라, 각 컬럼에 extra padding을 주고 버튼이 가운데 정렬이 되게 하려면(버튼 클릭에 따라 위치 변화) 컬럼에 코드 추가
     //    (centervertically보다 밑이니 맞춰서 가니까)
     //  버튼은 가만히 있고 아래에 그냥 extra padding을 주고 싶으면 row에 코드 주가
     //    (row는 완성이 됐고 그 아래에 padding이 추가가 되었기 때문. top에 해도 버튼이 가운데정렬되진 않음)
