@@ -95,7 +95,8 @@ fun Greetings(
 //    names: List<String> = listOf("World", "Compose")
     names: List<String> = List(1000) { "$it" } //it 은 각각의 인덱스를 나타냄
 ) {
-    //스크린에 보일 때만 존재하면 되니까 LazyColumn 사용하기
+    //스크린에 보일 때만 존재하면 되니까 LazyColumn 사용하기.
+    //  LazyColumn 쓸 때는 items를 써야 함...
     LazyColumn(modifier = modifier.padding(4.dp)) {
         // items 선택 시 list<> 있는 거 선택
         items(items = names) { name ->
@@ -116,6 +117,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     val extraPadding by animateDpAsState(
         targetValue = if (expanded) 28.dp else 0.dp,
         //spring : 한번 눌렀을 때 통통 튀는 효과를 줌
+        // spring 하기 전까지는 coerceAtLeast를 쓰지 않아도 ㄱㅊ
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
@@ -152,6 +154,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                     )
                 )
                 //테마의 색상 등은 Project > app > src > main > java > ... > ui.Theme > Theme.kt 아래에 있음
+                // 거기서 dynamicColor 부분 수정하기! false로 바꿔야 함... 해당 코드 윗부분에서 false로 바꿔줘야 함.
             }
             // 버튼
             ElevatedButton(onClick = { expanded = !expanded }) {
