@@ -27,6 +27,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         //이 아래의 많은 컴포저블 함수들이 실행됨
         setContent {
+            //액티비티의 사용자 인터페이스 내용을 아래 컴포저블 함수에서 제공함을 선언...
+            // 아래 함수는 project 창의 app > 패키지 이름 > ui.theme > Theme.kt 파일에 있음
+            // 액티비티에서 사용할 색상, 글꼴, 모양을 정의하고 앱 사용자 인터페이스의 전체 테마를 커스터마이즈할 수 있는 중심 영역
             FirstApp1Theme {
                 //아래를 자주 사용하게 될 것이라면, MyApp composable 함수를 만들어서 사용하기
 //                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -60,6 +63,7 @@ fun MyApp(
         //  Column 부분에서도!
         // (그 위 surface 부분까지도 확인하기.)
         // 제대로 설정한 뒤에는 다시 modifier 라고 해도 됨.
+        //  ? 위에서 말하는 제대로 설정한 게 modifer 가 아니라 modifier.fillMax 어쩌구로 설정하지 않은 상태를 말하는건가?
 
 //        Column {
 //            Greeting(
@@ -86,13 +90,14 @@ fun MyApp(
         // padding 뒤의 괄호에 (vertical = 4.dp라고 하면 위에 패딩, horizontal은 왼쪽에 패딩)
 //        Column(modifier = modifier.padding(4.dp)) {
         //위와 다르게, innerpadding을 먼저 패딩하고 추가적으로 패딩하는 것으로 코드 변경
+        //여기서 패딩 주면 컬럼들 밖으로 패딩이 생긴다... 화면이랑 내용물 사이!
         Column(modifier = modifier.padding(innerPadding).padding(4.dp)) {
             for (name in names) {
                 Greeting(
                     name = name
 //                    , modifier = Modifier.padding(innerPadding)
                     // 여기서 modifier를 주는 게 아니라(각각의 원소에 inner padding을 줄 필요는 없으니까)
-                    //  scaffold 바로 아래의 column에 inner padding을 전달하는 거로 코드 변경
+                    //  위의 scaffold 바로 아래의 column에 inner padding을 전달하는 거로 코드 변경
                     , modifier = Modifier
                     // 만약 아래 greeting에서 modifier 기본값을 갖고 있다면 위 코드 생략 가능
                 )
@@ -112,6 +117,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
     //(...){} 인 것으로 선택
     //import androidx.compose.material3.Surface
+    // surface는 다른 컴포저블의 배경을 제공...
     Surface(
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier.padding(4.dp)
@@ -119,15 +125,16 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         //color = Materi.. --> 함수에 argument를 전달할 때, color라는 파라미터를 명시하면서 넘기고 있음
 
 
-        //세로 형식으로 보여줄 때
+        //가로 형식으로 보여줄 때. 텍스트를 나타내는 컬럼이랑 버튼을 가로로 보여줌
 //        Row {
-        // 세로 위치 정렬 - 가운데 정렬
+        // 세로 위치 정렬 - 가운데 정렬 (버튼이 위에 치우치지 않고 세로의 가운데로 옴... 여기선 우측에 치우진 위아래 가운데가 됨)
+        //여기서 패딩 주면 컬럼들 간에 패딩 생기는듯....? 여기선 컬럼이랑 버튼 밖에 가장자리 패딩이 생김
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier.padding((24.dp)
             )
         ) {
-            //세로로 배치할 때 사용, 이 안에 텍스트를 넣어줌
+            //세로로 배치할 때 사용, 이 안에 텍스트를 넣어줌. 열
             // padding을 추가로 줄 수도 있음
             // 길이 등을 조절할 때에도 이 뒤에 사용
 //            Column(
@@ -136,7 +143,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 //                    .padding(24.dp)
 //            ) {
 
-            // 그냥 전체가 아니라 weight로 한 것. 그리고 row 에서 전체 padding을 주려고 padding 부분 뺌
+            // 그냥 전체가 아니라 weight로 한 것. 그리고 row 에서 전체 padding을 주려고 padding 부분 뺌.
+            // fillMaxWidth 에서 버튼을 추가하려고 하면 버튼이 안 보임...
+            // 나머지 것(크기가 정해진 것)들을 먼저 배치한 뒤에 나머지것들을 얼마나 비율로 차지하게 할 건지를 하려면 weight
+            // 1이라고 하면 100%임.
+            // 버튼을 제외한 나머지 전체를 말하는듯.
+
             Column(
                 modifier = modifier
                     .weight(1f)
